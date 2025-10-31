@@ -10,23 +10,29 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-from pathlib import Path
+from datetime import timedelta
+from nt import O_TEMPORARY
+import os
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@a7+ze6ctuk1smt6ej%h1%xm+$y)cqa18adm#9!z(bgj8gmrpz'
-
+SECRET_KEY = env.str('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
+CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS')
 
 # Application definition
 
@@ -44,10 +50,11 @@ INSTALLED_APPS = [
     'reviews',
     'rest_framework',
     'corsheaders',
-    'django_rest_framework_simplejwt',
+    'rest_framework_simplejwt',
     ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware", #CORS vulnerability prevention
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -55,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'secure_ecommerce_project.urls'
@@ -83,12 +91,30 @@ WSGI_APPLICATION = 'secure_ecommerce_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ecomerce_db',
-        'USER': 'postgres',
-        'PASSWORD': 'admin123',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': env.str('DB_NAME'),
+        'USER': env.str('DB_USER'),
+        'PASSWORD': env.str('DB_PASSWORD'),
+        'HOST': env.str('DB_HOST'),
+        'PORT': env.str('DB_PORT'),
+    
+    "options":{
+        #Connection timeout in seconds which is the time to wait for a connection to be established.
+        "connect_timeout": env.int('DB_CON_TIMEOUT'),
+    },
+    "conn_max_age": env.int('DB_CON_MAX_AGE'),
+    #Connection max age in seconds which is the time to keep the connection alive.
+    "sslmode": env.str('DB_SSLMODE'),
+    #SSL mode which is the SSL mode to use for the connection.
+    #SSL mode can be one of the following:
+    # - 'disable': No SSL encryption.
+    # - 'prefer': Prefer SSL encryption, but allow non-SSL connections.
+    # - 'require': Require SSL encryption, and reject non-SSL connections.
+    # - 'verify-ca': Verify the certificate against a trusted CA.
+    # - 'verify-full': Verify the certificate against a trusted CA and the server's hostname.
+
+
     }
+    
 }
 
 
@@ -132,3 +158,17 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+#django_rest_framework_simplejwt settings
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
+
+#django_rest_framework_simplejwt settings
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}   

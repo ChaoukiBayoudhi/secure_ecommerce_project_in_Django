@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from datetime import timedelta
-from nt import O_TEMPORARY
+from pathlib import Path
 import os
 import environ
 
@@ -96,26 +96,29 @@ DATABASES = {
         'PASSWORD': env.str('DB_PASSWORD'),
         'HOST': env.str('DB_HOST'),
         'PORT': env.str('DB_PORT'),
-    
-    "options":{
-        #Connection timeout in seconds which is the time to wait for a connection to be established.
-        "connect_timeout": env.int('DB_CON_TIMEOUT'),
-    },
-    "conn_max_age": env.int('DB_CON_MAX_AGE'),
-    #Connection max age in seconds which is the time to keep the connection alive.
-    "sslmode": env.str('DB_SSLMODE'),
-    #SSL mode which is the SSL mode to use for the connection.
-    #SSL mode can be one of the following:
-    # - 'disable': No SSL encryption.
-    # - 'prefer': Prefer SSL encryption, but allow non-SSL connections.
-    # - 'require': Require SSL encryption, and reject non-SSL connections.
-    # - 'verify-ca': Verify the certificate against a trusted CA.
-    # - 'verify-full': Verify the certificate against a trusted CA and the server's hostname.
-
-
+        'OPTIONS': {
+            # Connection timeout in seconds which is the time to wait for a connection to be established.
+            'connect_timeout': env.int('DB_CON_TIMEOUT'),
+            # SSL mode which is the SSL mode to use for the connection.
+            # SSL mode can be one of the following:
+            # - 'disable': No SSL encryption.
+            # - 'prefer': Prefer SSL encryption, but allow non-SSL connections.
+            # - 'require': Require SSL encryption, and reject non-SSL connections.
+            # - 'verify-ca': Verify the certificate against a trusted CA.
+            # - 'verify-full': Verify the certificate against a trusted CA and the server's hostname.
+            'sslmode': env.str('DB_SSLMODE'),
+        },
+        'CONN_MAX_AGE': env.int('DB_CON_MAX_AGE'),  # Connection max age in seconds which is the time to keep the connection alive.
     }
-    
 }
+
+# ============================================================================
+# AUTHENTICATION CONFIGURATION
+# ============================================================================
+
+AUTH_USER_MODEL = 'authentication.User'
+
+
 
 
 # Password validation
@@ -171,4 +174,89 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}
+
+# ============================================================================
+# HTTPS/SSL SECURITY CONFIGURATION
+# ============================================================================
+
+# Force HTTPS in production
+# Set to True when behind a proxy that handles SSL termination (e.g., nginx, load balancer)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Force all HTTP requests to redirect to HTTPS
+# Set to True in production when SSL is properly configured
+SECURE_SSL_REDIRECT = env.bool('SECURE_SSL_REDIRECT', default=False)
+
+# Ensure cookies are only sent over HTTPS
+# Set to True in production
+SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', default=False)
+
+# Ensure CSRF cookies are only sent over HTTPS
+# Set to True in production
+CSRF_COOKIE_SECURE = env.bool('CSRF_COOKIE_SECURE', default=False)
+
+# Prevent cookies from being accessed by JavaScript (XSS protection)
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+
+# Set SameSite attribute for cookies to prevent CSRF attacks
+# Options: 'Strict', 'Lax', 'None'
+# 'Strict': Cookie is never sent in cross-site requests
+# 'Lax': Cookie is sent in top-level navigation (default, good balance)
+# 'None': Cookie is sent in all cross-site requests (requires Secure flag)
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'Lax'
+
+# HTTP Strict Transport Security (HSTS)
+# Forces browsers to only use HTTPS for a specified period
+# Set to True in production when SSL is properly configured
+SECURE_HSTS_SECONDS = env.int('SECURE_HSTS_SECONDS', default=0)  # 0 = disabled, recommended: 31536000 (1 year)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool('SECURE_HSTS_INCLUDE_SUBDOMAINS', default=False)
+SECURE_HSTS_PRELOAD = env.bool('SECURE_HSTS_PRELOAD', default=False)
+
+# Content Security Policy (CSP) - Additional security headers
+# Note: Django doesn't have built-in CSP, but you can use django-csp package
+# For now, we'll configure basic security headers via middleware
+
+# Additional Security Headers (handled by SecurityMiddleware)
+# Prevent clickjacking attacks
+X_FRAME_OPTIONS = 'DENY'  # Options: 'DENY', 'SAMEORIGIN', 'ALLOW-FROM'
+
+# Prevent MIME type sniffing
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Enable XSS protection in browsers
+SECURE_BROWSER_XSS_FILTER = True
+
+# Referrer Policy - Controls how much referrer information is sent
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+# Options:
+# - 'no-referrer': Never send referrer
+# - 'same-origin': Only send referrer for same-origin requests
+# - 'strict-origin-when-cross-origin': Send full referrer for same-origin, origin only for cross-origin HTTPS
+# - 'origin-when-cross-origin': Send full referrer for same-origin, origin only for cross-origin
+
+# Permissions Policy (formerly Feature Policy)
+# Restrict browser features that can be used
+PERMISSIONS_POLICY = {
+    # List of features that are allowed to be used.
+    # If the feature is not in the list, it will be blocked.
+    # If the feature is in the list, it will be allowed to be used.
+
+    'accelerometer': [], #Accelerometer is a sensor that measures the acceleration of the device.
+    'ambient-light-sensor': [],
+    'autoplay': [],
+    'camera': [],
+    'display-capture': [],
+    'document-domain': [],
+    'encrypted-media': [],
+    'fullscreen': [],
+    'geolocation': [],
+    'gyroscope': [],
+    'magnetometer': [],
+    'microphone': [],
+    'midi': [],
+    'payment': [],
+    'usb': [],
 }   

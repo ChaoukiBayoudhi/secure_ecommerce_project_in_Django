@@ -1,0 +1,147 @@
+# ============================================================================
+# JSON WEB TOKEN (JWT) CONFIGURATION
+# ============================================================================
+
+# Primary signing key used to create and verify JWT signatures.
+# JSON Web Tokens are compact, URL-safe strings that assert user identity.
+# The `JWT_SECRET_KEY` is the cryptographic secret that signs those tokens.
+# Anyone with this key can forge tokens, so it must be stored in a secure
+# vault, rotated regularly, and never hard-coded in source control.
+JWT_SECRET_KEY=change-me-in-production
+#Example :
+JWT_SECRET_KEY="azgg5&!7vP1wL0kS3hN9@tZuQ2R4yF6c"
+
+# Algorithm used to sign tokens. HS256 (HMAC + SHA-256) is common for symmetric
+# secrets because it is easy to deploy—only one shared secret is required.
+# If you need stronger guarantees and key rotation handled by different teams,
+# consider asymmetric algorithms (RS256/ES256) so public keys can validate
+# tokens without exposing the signing secret.
+# HS256: Symmetric signing using the shared `JWT_SECRET_KEY`. Fast and easy to
+# roll out because the same key both signs and verifies the token. Best suited
+# when the API and the identity provider run within the same trust boundary.
+# RS256: Asymmetric signing using RSA key pairs. The identity provider holds the
+# private key to sign tokens while services verify using the published public
+# key (often via JWKS). Ideal for distributed microservices because the private
+# key never leaves the IdP.
+# ES256: Asymmetric signing using elliptic curve cryptography (ECDSA + P-256).
+# Produces shorter signatures than RS256 with comparable security. Requires
+# libraries that support ECDSA but reduces token size for bandwidth-sensitive
+# clients (mobile, IoT).
+JWT_ALGORITHM=HS256
+
+
+# Access token lifetime in minutes. These short-lived tokens are presented on
+# every API call. Setting a lower number (e.g., 5-15 minutes) limits exposure if
+# an attacker steals a token, but requires clients to refresh more frequently.
+# You can increase the value for service-to-service auth where networks are
+# controlled, but keep human-facing apps short to reduce risk.
+JWT_ACCESS_TOKEN_LIFETIME_MINUTES=15
+
+# Refresh token lifetime in days. Refresh tokens stay with the client and can
+# obtain new access tokens without forcing the user to log in again. Because
+# they are powerful, store them securely (e.g., HTTP-only cookies) and set a
+# reasonable expiration so abandoned devices lose access over time.
+JWT_REFRESH_TOKEN_LIFETIME_DAYS=7
+
+# Audience claim (aud) expected in tokens. This tells the application which
+# service the token is intended for. Reject tokens that do not list your API as
+# the audience to prevent replay attacks where tokens meant for other services
+# are reused against this backend.
+JWT_EXPECTED_AUDIENCE=secure-ecommerce-api
+
+
+# Issuer claim (iss) embedded in tokens you mint. This value should be the URL
+# of your authorization server. Clients and downstream APIs compare the issuer
+# to ensure the token came from a trusted identity provider (IdP).
+JWT_ISSUER=https://auth.secure-ecommerce.local
+
+
+
+# ============================================================================
+# OAUTH 2.0 CLIENT CONFIGURATION
+# ============================================================================
+
+# Authorization server base URL. All OAuth 2.0 endpoints (authorization,
+# token, userinfo, JWKS) are discovered relative to this value. Many providers
+# publish a `.well-known/openid-configuration` document at this root.
+OAUTH2_PROVIDER_URL=https://identity.example.com
+
+
+# Public identifier issued by the authorization server. This value tells the IdP
+# which application is requesting access. It is generally safe to expose, but
+# manage changes through configuration so you can support multiple environments.
+OAUTH2_CLIENT_ID=secure-ecommerce-frontend
+#Example :
+OAUTH2_CLIENT_ID="secure-ecommerce-frontend"
+
+# Client secret issued alongside the client ID. Treat it like a password: keep
+# it on the server, rotate it if leaked, and avoid sending it to the browser.
+# Some flows (PKCE, public clients) do not require a secret—only set this when
+# using confidential clients.
+OAUTH2_CLIENT_SECRET=change-me-too
+#Example :
+OAUTH2_CLIENT_SECRET="S3cureCl13nt!dA5hR0t#"
+
+# List of scopes requested during authorization. Request the minimum set needed.
+# Common OpenID Connect scopes include `openid` (required), `profile`, `email`,
+# and `offline_access` (grants refresh tokens). Too many scopes increase risk,
+# so audit them regularly.
+OAUTH2_DEFAULT_SCOPES="openid profile email offline_access"
+#Example :
+OAUTH2_DEFAULT_SCOPES="openid profile email"
+
+# Redirect URI registered with the provider. This is where the IdP sends the
+# user after consent. It must match exactly (including scheme and trailing
+# slash) what is registered in the provider console to prevent open redirect
+# vulnerabilities.
+OAUTH2_REDIRECT_URI=https://secure-ecommerce.example.com/oauth/callback
+
+
+# Optional audience parameter for providers that support resource indicators.
+# Specify the API you intend to call so the provider issues an access token
+# scoped for that resource. Leave blank if your IdP does not support it.
+OAUTH2_RESOURCE_AUDIENCE=https://api.secure-ecommerce.example.com
+
+
+
+# ============================================================================
+# ONE-TIME PASSWORD (OTP) / MFA CONFIGURATION
+# ============================================================================
+
+# Number of digits generated for each OTP code. Six digits is the de-facto
+# standard (compatible with Google Authenticator, Authy, etc.). Eight digits
+# provide more entropy but can frustrate users when typing on mobile devices.
+OTP_DIGITS=6
+
+
+# Validity window for OTP codes in seconds. During this period the code remains
+# valid. Short windows (60-120 seconds) balance security and usability—longer
+# windows give attackers more time to brute force guesses.
+OTP_VALIDITY_SECONDS=120
+
+
+# Select the delivery method for OTPs. Choose `sms` or `email` for out-of-band
+# delivery, or `app` when using TOTP authenticator apps. Consider offering
+# multiple paths so users can recover if one channel fails.
+OTP_DELIVERY_METHOD=email
+
+
+# Rate limit threshold controlling how many OTPs can be requested per account
+# within a specific time frame. This thwarts attackers who trigger repeated OTP
+# sends to annoy users or discover codes via brute force.
+OTP_REQUESTS_PER_HOUR=5
+
+
+# Skew allowance (in steps) for time-based OTP (TOTP). Allows the server to
+# accept codes that fall one time-step before or after the expected value,
+# accounting for clock drift between devices.
+OTP_TOTP_ALLOWED_DRIFT_STEPS=1
+
+
+# Secret key used when generating TOTP seeds or signing OTP payloads. This
+# master secret should remain on the server and never ship to clients. Use a
+# dedicated secrets manager (HashiCorp Vault, AWS Secrets Manager, etc.) to
+# protect it and rotate if compromise is suspected.
+OTP_MASTER_SECRET=replace-with-strong-random-string
+#Example :
+OTP_MASTER_SECRET="mJ7s!9Qx#4Fp2ZnV@0Lu"

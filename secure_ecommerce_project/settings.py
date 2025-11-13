@@ -163,18 +163,37 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-#django_rest_framework_simplejwt settings
+# ============================================================================
+# DJANGO REST FRAMEWORK & JWT AUTHENTICATION
+# ============================================================================
+#
+# API endpoints require JWT credentials by default. Public-facing views
+# (registration, login, password reset) explicitly override this with
+# `AllowAny` so they remain accessible without a token.
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
+    'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ],
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
 }
 
-#django_rest_framework_simplejwt settings
+# Align Simple JWT lifetimes with the security recommendations documented in
+# `jwt_oauth_otp_configuration.txt`. Adjust via environment variables if an
+# environment needs shorter or longer validity windows.
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
 }
+
+# Brute-force safeguards used by the login serializer. Override these values
+# in the environment to tune how many failed attempts are tolerated and how
+# long an account remains locked after the threshold is exceeded.
+AUTH_LOCKOUT_THRESHOLD = env.int('AUTH_LOCKOUT_THRESHOLD', default=5)
+AUTH_LOCKOUT_MINUTES = env.int('AUTH_LOCKOUT_MINUTES', default=15)
 
 # ============================================================================
 # HTTPS/SSL SECURITY CONFIGURATION

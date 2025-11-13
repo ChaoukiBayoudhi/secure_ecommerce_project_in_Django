@@ -1,0 +1,132 @@
+# ============================================================================
+# HTTPS/SSL SECURITY CONFIGURATION for Local Development
+# ============================================================================
+
+# Force all HTTP requests to redirect to HTTPS
+# Development: False
+# Production: True (after SSL certificate is configured)
+SECURE_SSL_REDIRECT=False
+
+# Ensure session cookies are only sent over HTTPS
+#session is a cookie that is used to store the user's session data
+#like the user's login information, the user's shopping cart, the user's preferences, etc.
+#if the session cookie is not secure, it can be stolen by a malicious user
+#and used to access the user's account and data
+#if the session cookie is secure, it will only be sent over an https connection
+#and cannot be stolen by a malicious user
+#a COOKIE is a small piece of data that is stored on the user's computer by the web browser
+#it is used to store the user's session data
+#it is sent to the server with each request
+#it is used to identify the user
+
+# Development: False
+# Production: True
+SESSION_COOKIE_SECURE=False
+
+# Ensure CSRF cookies are only sent over HTTPS
+#csrf is a cookie that is used to prevent cross-site request forgery attacks
+#if the csrf cookie is not secure, it can be stolen by a malicious user
+#and used to access the user's account and data
+#if the csrf cookie is secure, it will only be sent over an https connection
+#and cannot be stolen by a malicious user
+#a CSRF token is a small piece of data that is used to prevent cross-site request forgery attacks
+
+# Development: False
+# Production: True
+CSRF_COOKIE_SECURE=False
+
+# HTTP Strict Transport Security (HSTS) - Seconds
+# HSTS is a security header that tells the browser to only use https for a specified period of time
+# if the browser receives this header, it will automatically upgrade future requests to https
+# this prevents protocol downgrade attacks
+
+# Development: 0 (disabled)
+# Production: 31536000 (1 year)
+SECURE_HSTS_SECONDS=0
+
+# HSTS Include Subdomains
+# HSTS Include Subdomains is a security header that tells the browser to only use https for all subdomains
+#subdomains are the domains that are under the main domain
+#for example, if the main domain is example.com, then the subdomains are www.example.com, blog.example.com, etc.
+
+
+# Development: False
+# Production: True (if you have subdomains)
+SECURE_HSTS_INCLUDE_SUBDOMAINS=False
+
+# HSTS Preload
+# HSTS Preload is a security header that tells the browser to only use https for the main domain
+#Example: https://example.com
+#https://www.example.com
+#https://blog.example.com
+#https://api.example.com
+#https://example.com/api
+#https://example.com/api/v1
+#https://example.com/api/v1/users
+#https://example.com/api/v1/users/1
+#https://example.com/api/v1/users/1/posts
+#https://example.com/api/v1/users/1/posts/1
+# Development: False
+# Production: True (only after thorough testing)
+SECURE_HSTS_PRELOAD=False
+
+
+# ============================================================================
+# HTTPS/SSL SECURITY CONFIGURATION for Production
+# ============================================================================
+
+# Force HTTPS in production
+# Set to True when behind a proxy that handles SSL termination (e.g., nginx, load balancer)
+#proxy header is used to tell the application that the request is coming from an https connection
+#proxy means a server that sits in front of the application and handles the requests for the application
+#HTTP_X_FORWARDED_PROTO is the parameter
+#https is the value
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Force all HTTP requests to redirect to HTTPS
+# Set to True in production when SSL is properly configured
+SECURE_SSL_REDIRECT = env.bool('SECURE_SSL_REDIRECT', default=False)
+
+# Ensure cookies are only sent over HTTPS
+# Set to True in production
+SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', default=False)
+
+# ---------------------------------------------------------------------------
+# Recommended environment-variable overrides for a hardened deployment.
+# Keeping these values here (mirroring what you should place inside the
+# production `.env`) makes it obvious which switches must flip to `True` once
+# you provision a valid TLS certificate and terminate HTTPS at your proxy.
+# Each flag is broken out so you can tweak them individually during staging
+# rollouts without editing application code.
+# ---------------------------------------------------------------------------
+
+# Redirect every incoming HTTP request to HTTPS. Turn this on only after
+# confirming that your load balancer / reverse proxy forwards HTTPS traffic
+# correctly to Django. Leaving it off in development prevents broken redirects
+# when you are still serving plain HTTP locally.
+SECURE_SSL_REDIRECT=True
+
+# Protect the session cookie by marking it `Secure`, which means browsers will
+# refuse to send it over plain HTTP. This blocks credential leakage if someone
+# tries to downgrade connections or accesses the site over an insecure link.
+SESSION_COOKIE_SECURE=True
+
+# Apply the same `Secure` flag to the CSRF cookie so cross-site request forgery
+# tokens are never transmitted over clear-text channels. Combined with HTTPS it
+# prevents attackers from stealing the token via network sniffing.
+CSRF_COOKIE_SECURE=True
+
+# Enable HTTP Strict Transport Security (HSTS) for one year (31536000 seconds).
+# Once a browser receives this header it will automatically upgrade future
+# requests to HTTPS, which eliminates protocol downgrade attacks.
+SECURE_HSTS_SECONDS=31536000
+
+# Extend HSTS protection to all subdomains. Only enable this after you are sure
+# every subdomain you control is HTTPS-enabled; otherwise those subdomains would
+# become unreachable in compliant browsers.
+SECURE_HSTS_INCLUDE_SUBDOMAINS=True
+
+# Request inclusion in the browser vendors' HSTS preload list. This should be
+# the final step—submit your domain only after running with the above settings
+# long enough to verify there are no mixed-content or certificate issues.
+SECURE_HSTS_PRELOAD=True

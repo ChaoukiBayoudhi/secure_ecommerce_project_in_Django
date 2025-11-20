@@ -117,6 +117,9 @@ DATABASES = {
 # ============================================================================
 
 AUTH_USER_MODEL = 'authentication.User'
+# Name of the baseline role automatically granted at signup. Keeping it in the
+# environment avoids hard-coding business-specific terminology.
+DEFAULT_CUSTOMER_ROLE = env.str('DEFAULT_CUSTOMER_ROLE', default='CUSTOMER')
 
 
 
@@ -177,6 +180,22 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+    # Throttles protect the API edge from brute force and scraping attempts.
+    # User/anon rates cover every view, while scoped throttles let us define
+    # custom limits for especially sensitive endpoints (login, register, ...).
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.UserRateThrottle',
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.ScopedRateThrottle',
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        # Global caps shared across the API surface.
+        'user': '100/hour',
+        'anon': '20/hour',
+        # Fine-grained caps tied to ScopedRateThrottle via throttle_scope.
+        'auth-login': '10/minute',
+        'auth-register': '5/hour',
+    },
 }
 
 # Align Simple JWT lifetimes with the security recommendations documented in

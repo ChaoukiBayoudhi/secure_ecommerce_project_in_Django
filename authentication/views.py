@@ -3,11 +3,12 @@ from functools import wraps
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, throttle_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.throttling import ScopedRateThrottle
 
 from .models import Role
 from .serializers import (
@@ -50,8 +51,11 @@ def _issue_tokens_for_user(user: User) -> dict:
     }
 
 
+# Registration must stay open to unauthenticated users, so we pair AllowAny
+# with ScopedRateThrottle to keep bots from hammering the endpoint.
 @api_view(["POST"])
 @permission_classes([AllowAny])
+@throttle_classes([ScopedRateThrottle])
 def register_user(request):
     serializer = UserRegistrationSerializer(data=request.data, context={"request": request})
     serializer.is_valid(raise_exception=True)
@@ -64,8 +68,11 @@ def register_user(request):
     return Response(data, status=status.HTTP_201_CREATED)
 
 
+# Login is another anonymous entry point; throttling slows down credential
+# stuffing while still allowing legitimate users to authenticate.
 @api_view(["POST"])
 @permission_classes([AllowAny])
+@throttle_classes([ScopedRateThrottle])
 def login_user(request):
     serializer = LoginSerializer(data=request.data, context={"request": request})
     serializer.is_valid(raise_exception=True)
@@ -122,3 +129,10 @@ def roles(request):
     serializer.is_valid(raise_exception=True)
     role = serializer.save()
     return Response(RoleSerializer(role).data, status=status.HTTP_201_CREATED)
+
+
+# Map each throttled view to the rate definitions declared in
+# REST_FRAMEWORK['DEFAULT_THROTTLE_RATES']. Using explicit names keeps the
+# relationship obvious when security teams review the code.
+register_user.throttle_scope = "auth-register"
+login_user.throttle_scope = "auth-login"

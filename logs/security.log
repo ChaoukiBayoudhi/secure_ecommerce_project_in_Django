@@ -1,0 +1,314 @@
+INFO 2025-12-04 13:48:14,731 autoreload 4062 8521998464 Watching for file changes with StatReloader
+INFO 2025-12-04 13:49:47,564 autoreload 4062 8521998464 /Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/contrib/admin/__init__.py changed, reloading.
+INFO 2025-12-04 13:50:20,732 autoreload 8361 8521998464 Watching for file changes with StatReloader
+INFO 2025-12-04 16:49:44,483 autoreload 22880 8521998464 Watching for file changes with StatReloader
+INFO 2025-12-04 16:51:12,926 autoreload 22880 8521998464 /Users/chaoukibayoudhi/Documents/Teaching Package/ISG Tunis/first semester/2025_2026/secure_programming/lab_corrections/authentication_authorization_middlewares_axes/secure_ecommerce_project/authentication/admin.py changed, reloading.
+INFO 2025-12-04 16:51:13,735 autoreload 25687 8521998464 Watching for file changes with StatReloader
+INFO 2025-12-04 16:52:19,439 autoreload 27818 8521998464 Watching for file changes with StatReloader
+INFO 2025-12-04 16:52:44,100 autoreload 29573 8521998464 Watching for file changes with StatReloader
+INFO 2025-12-04 16:53:19,666 autoreload 29573 8521998464 /Users/chaoukibayoudhi/Documents/Teaching Package/ISG Tunis/first semester/2025_2026/secure_programming/lab_corrections/authentication_authorization_middlewares_axes/secure_ecommerce_project/authentication/webauthn_service.py changed, reloading.
+INFO 2025-12-04 16:53:24,245 autoreload 30941 8521998464 Watching for file changes with StatReloader
+INFO 2025-12-04 16:54:40,378 autoreload 33346 8521998464 Watching for file changes with StatReloader
+INFO 2025-12-04 16:55:20,463 autoreload 33346 8521998464 /Users/chaoukibayoudhi/Documents/Teaching Package/ISG Tunis/first semester/2025_2026/secure_programming/lab_corrections/authentication_authorization_middlewares_axes/secure_ecommerce_project/authentication/webauthn_service.py changed, reloading.
+INFO 2025-12-04 16:55:21,351 autoreload 34718 8521998464 Watching for file changes with StatReloader
+INFO 2025-12-04 17:10:57,054 autoreload 63672 8521998464 Watching for file changes with StatReloader
+INFO 2025-12-04 17:11:20,176 autoreload 63672 8521998464 /Users/chaoukibayoudhi/Documents/Teaching Package/ISG Tunis/first semester/2025_2026/secure_programming/lab_corrections/authentication_authorization_middlewares_axes/secure_ecommerce_project/authentication/models.py changed, reloading.
+INFO 2025-12-04 17:11:23,277 autoreload 64674 8521998464 Watching for file changes with StatReloader
+WARNING 2025-12-04 17:11:31,031 log 64674 6129430528 Unauthorized: /api/auth/roles/
+WARNING 2025-12-04 17:11:31,035 log 64674 6129430528 "GET /api/auth/roles/ HTTP/1.1" 401 58
+ERROR 2025-12-04 17:11:32,376 middleware 64674 6129430528 Error logging exception: relation "authentication_auditlog" does not exist
+LINE 1: INSERT INTO "authentication_auditlog" ("user_id", "action", ...
+                    ^
+
+ERROR 2025-12-04 17:11:32,400 log 64674 6129430528 Internal Server Error: /api/auth/register/
+Traceback (most recent call last):
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+psycopg2.errors.UndefinedColumn: column "mfa_enabled" of relation "authentication_user" does not exist
+LINE 1: ...ts", "last_failed_login", "account_locked_until", "mfa_enabl...
+                                                             ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/core/handlers/base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/views/generic/base.py", line 106, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/rest_framework/decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+  File "/Users/chaoukibayoudhi/Documents/Teaching Package/ISG Tunis/first semester/2025_2026/secure_programming/lab_corrections/authentication_authorization_middlewares_axes/secure_ecommerce_project/authentication/views.py", line 61, in register_user
+    user = serializer.save()
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/rest_framework/serializers.py", line 210, in save
+    self.instance = self.create(validated_data)
+                    ~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/chaoukibayoudhi/Documents/Teaching Package/ISG Tunis/first semester/2025_2026/secure_programming/lab_corrections/authentication_authorization_middlewares_axes/secure_ecommerce_project/authentication/serializers.py", line 95, in create
+    user = User.objects.create_user(password=password, **validated_data)
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/contrib/auth/models.py", line 175, in create_user
+    return self._create_user(username, email, password, **extra_fields)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/contrib/auth/models.py", line 163, in _create_user
+    user.save(using=self._db)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/contrib/auth/base_user.py", line 62, in save
+    super().save(**kwargs)
+    ~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/models/base.py", line 874, in save
+    self.save_base(
+    ~~~~~~~~~~~~~~^
+        using=using,
+        ^^^^^^^^^^^^
+    ...<2 lines>...
+        update_fields=update_fields,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/models/base.py", line 966, in save_base
+    updated = self._save_table(
+        raw,
+    ...<4 lines>...
+        update_fields,
+    )
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/models/base.py", line 1167, in _save_table
+    results = self._do_insert(
+        cls._base_manager, using, insert_fields, returning_fields, raw
+    )
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/models/base.py", line 1218, in _do_insert
+    return manager._insert(
+           ~~~~~~~~~~~~~~~^
+        [self],
+        ^^^^^^^
+    ...<3 lines>...
+        raw=raw,
+        ^^^^^^^^
+    )
+    ^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/models/query.py", line 1918, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/models/sql/compiler.py", line 1925, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/utils.py", line 94, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+django.db.utils.ProgrammingError: column "mfa_enabled" of relation "authentication_user" does not exist
+LINE 1: ...ts", "last_failed_login", "account_locked_until", "mfa_enabl...
+                                                             ^
+
+ERROR 2025-12-04 17:11:32,404 middleware 64674 6129430528 Error completing audit log: relation "authentication_auditlog" does not exist
+LINE 1: INSERT INTO "authentication_auditlog" ("user_id", "action", ...
+                    ^
+
+ERROR 2025-12-04 17:11:32,404 log 64674 6129430528 "POST /api/auth/register/ HTTP/1.1" 500 33654
+ERROR 2025-12-04 17:11:32,577 middleware 64674 6146256896 Error logging exception: relation "authentication_auditlog" does not exist
+LINE 1: INSERT INTO "authentication_auditlog" ("user_id", "action", ...
+                    ^
+
+ERROR 2025-12-04 17:11:32,590 log 64674 6146256896 Internal Server Error: /api/auth/register/
+Traceback (most recent call last):
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+psycopg2.errors.UndefinedColumn: column "mfa_enabled" of relation "authentication_user" does not exist
+LINE 1: ...ts", "last_failed_login", "account_locked_until", "mfa_enabl...
+                                                             ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/core/handlers/base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/views/generic/base.py", line 106, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/rest_framework/views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/rest_framework/views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/rest_framework/views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/rest_framework/decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+  File "/Users/chaoukibayoudhi/Documents/Teaching Package/ISG Tunis/first semester/2025_2026/secure_programming/lab_corrections/authentication_authorization_middlewares_axes/secure_ecommerce_project/authentication/views.py", line 61, in register_user
+    user = serializer.save()
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/rest_framework/serializers.py", line 210, in save
+    self.instance = self.create(validated_data)
+                    ~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/chaoukibayoudhi/Documents/Teaching Package/ISG Tunis/first semester/2025_2026/secure_programming/lab_corrections/authentication_authorization_middlewares_axes/secure_ecommerce_project/authentication/serializers.py", line 95, in create
+    user = User.objects.create_user(password=password, **validated_data)
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/contrib/auth/models.py", line 175, in create_user
+    return self._create_user(username, email, password, **extra_fields)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/contrib/auth/models.py", line 163, in _create_user
+    user.save(using=self._db)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/contrib/auth/base_user.py", line 62, in save
+    super().save(**kwargs)
+    ~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/models/base.py", line 874, in save
+    self.save_base(
+    ~~~~~~~~~~~~~~^
+        using=using,
+        ^^^^^^^^^^^^
+    ...<2 lines>...
+        update_fields=update_fields,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/models/base.py", line 966, in save_base
+    updated = self._save_table(
+        raw,
+    ...<4 lines>...
+        update_fields,
+    )
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/models/base.py", line 1167, in _save_table
+    results = self._do_insert(
+        cls._base_manager, using, insert_fields, returning_fields, raw
+    )
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/models/base.py", line 1218, in _do_insert
+    return manager._insert(
+           ~~~~~~~~~~~~~~~^
+        [self],
+        ^^^^^^^
+    ...<3 lines>...
+        raw=raw,
+        ^^^^^^^^
+    )
+    ^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/models/query.py", line 1918, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/models/sql/compiler.py", line 1925, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/utils.py", line 94, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/chaoukibayoudhi/.local/share/virtualenvs/authentication_authorization_middlewares_a-85Q-8obD/lib/python3.14/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+django.db.utils.ProgrammingError: column "mfa_enabled" of relation "authentication_user" does not exist
+LINE 1: ...ts", "last_failed_login", "account_locked_until", "mfa_enabl...
+                                                             ^
+
+ERROR 2025-12-04 17:11:32,594 middleware 64674 6146256896 Error completing audit log: relation "authentication_auditlog" does not exist
+LINE 1: INSERT INTO "authentication_auditlog" ("user_id", "action", ...
+                    ^
+
+ERROR 2025-12-04 17:11:32,594 log 64674 6146256896 "POST /api/auth/register/ HTTP/1.1" 500 33654
+INFO 2025-12-04 17:11:46,555 log 64674 6163083264 "POST /api/auth/register/ HTTP/1.1" 201 779
+WARNING 2025-12-04 17:11:46,586 log 64674 6163083264 Bad Request: /api/auth/register/
+WARNING 2025-12-04 17:11:46,586 log 64674 6163083264 "POST /api/auth/register/ HTTP/1.1" 400 105
+INFO 2025-12-04 17:11:57,968 autoreload 64674 8521998464 /Users/chaoukibayoudhi/Documents/Teaching Package/ISG Tunis/first semester/2025_2026/secure_programming/lab_corrections/authentication_authorization_middlewares_axes/secure_ecommerce_project/authentication/admin.py changed, reloading.
+INFO 2025-12-04 17:11:58,529 autoreload 65953 8521998464 Watching for file changes with StatReloader
+INFO 2025-12-04 17:13:09,866 log 65953 6127661056 "POST /api/auth/webauthn/authenticate/start/ HTTP/1.1" 200 286
+INFO 2025-12-04 17:13:20,981 log 65953 6127661056 "POST /api/auth/webauthn/authenticate/start/ HTTP/1.1" 200 286
+INFO 2025-12-04 17:16:01,524 autoreload 65953 8521998464 /Users/chaoukibayoudhi/Documents/Teaching Package/ISG Tunis/first semester/2025_2026/secure_programming/lab_corrections/authentication_authorization_middlewares_axes/secure_ecommerce_project/authentication/admin.py changed, reloading.
+INFO 2025-12-04 17:16:02,278 autoreload 73642 8521998464 Watching for file changes with StatReloader
+INFO 2025-12-04 17:16:03,918 autoreload 73642 8521998464 /Users/chaoukibayoudhi/Documents/Teaching Package/ISG Tunis/first semester/2025_2026/secure_programming/lab_corrections/authentication_authorization_middlewares_axes/secure_ecommerce_project/authentication/models.py changed, reloading.
+INFO 2025-12-04 17:16:04,627 autoreload 73695 8521998464 Watching for file changes with StatReloader
+INFO 2025-12-04 17:20:02,299 log 73695 6201241600 "OPTIONS /api/auth/register/ HTTP/1.1" 200 0
+INFO 2025-12-04 17:21:38,988 log 73695 6201241600 "POST /api/auth/register/ HTTP/1.1" 201 781
+WARNING 2025-12-04 17:21:39,017 log 73695 6201241600 Bad Request: /api/auth/register/
+WARNING 2025-12-04 17:21:39,017 log 73695 6201241600 "POST /api/auth/register/ HTTP/1.1" 400 105
+INFO 2025-12-04 17:32:16,163 log 73695 6201241600 "OPTIONS /api/auth/register/ HTTP/1.1" 200 0
+INFO 2025-12-04 17:33:20,112 log 73695 6201241600 "OPTIONS /api/auth/register/ HTTP/1.1" 200 0
+INFO 2025-12-04 17:34:18,063 log 73695 6201241600 "POST /api/auth/register/ HTTP/1.1" 201 781
+INFO 2025-12-04 17:34:32,604 log 73695 6201241600 "OPTIONS /api/auth/register/ HTTP/1.1" 200 0
+INFO 2025-12-04 17:35:02,847 autoreload 73695 8521998464 /Users/chaoukibayoudhi/Documents/Teaching Package/ISG Tunis/first semester/2025_2026/secure_programming/lab_corrections/authentication_authorization_middlewares_axes/secure_ecommerce_project/secure_ecommerce_project/settings.py changed, reloading.
+INFO 2025-12-04 17:35:03,616 autoreload 70013 8521998464 Watching for file changes with StatReloader
+INFO 2025-12-04 17:35:22,536 autoreload 71668 8521998464 Watching for file changes with StatReloader
+INFO 2025-12-04 17:35:50,262 autoreload 73965 8521998464 Watching for file changes with StatReloader
+INFO 2025-12-04 17:35:53,399 log 73965 6125121536 "OPTIONS /api/auth/register/ HTTP/1.1" 200 0
+INFO 2025-12-04 17:37:13,109 autoreload 73965 8521998464 /Users/chaoukibayoudhi/Documents/Teaching Package/ISG Tunis/first semester/2025_2026/secure_programming/lab_corrections/authentication_authorization_middlewares_axes/secure_ecommerce_project/secure_ecommerce_project/settings.py changed, reloading.
+INFO 2025-12-04 17:37:13,824 autoreload 81145 8521998464 Watching for file changes with StatReloader
+INFO 2025-12-04 17:38:14,286 log 81145 6133411840 "OPTIONS /api/auth/register/ HTTP/1.1" 200 0
+INFO 2025-12-04 17:40:13,019 log 81145 6133411840 "POST /api/auth/register/ HTTP/1.1" 201 781
+WARNING 2025-12-04 17:40:13,049 log 81145 6133411840 Bad Request: /api/auth/register/
+WARNING 2025-12-04 17:40:13,049 log 81145 6133411840 "POST /api/auth/register/ HTTP/1.1" 400 105
+INFO 2025-12-04 17:40:13,899 log 81145 6133411840 "OPTIONS /api/auth/register/ HTTP/1.1" 200 0
+INFO 2025-12-04 17:40:23,467 autoreload 81145 8521998464 /Users/chaoukibayoudhi/Documents/Teaching Package/ISG Tunis/first semester/2025_2026/secure_programming/lab_corrections/authentication_authorization_middlewares_axes/secure_ecommerce_project/secure_ecommerce_project/settings.py changed, reloading.
+INFO 2025-12-04 17:40:24,041 autoreload 97058 8521998464 Watching for file changes with StatReloader
+INFO 2025-12-04 17:40:36,407 autoreload 98101 8521998464 Watching for file changes with StatReloader
+INFO 2025-12-04 17:40:39,772 log 98101 6166179840 "OPTIONS /api/auth/register/ HTTP/1.1" 200 0
+INFO 2025-12-04 17:41:01,318 log 98101 6165606400 "POST /api/auth/register/ HTTP/1.1" 201 781
+WARNING 2025-12-04 17:41:01,346 log 98101 6165606400 Bad Request: /api/auth/register/
+WARNING 2025-12-04 17:41:01,346 log 98101 6165606400 "POST /api/auth/register/ HTTP/1.1" 400 105
+INFO 2025-12-04 17:41:53,509 log 98101 6165606400 "OPTIONS /api/auth/register/ HTTP/1.1" 200 0
+INFO 2025-12-04 17:44:28,684 autoreload 98101 8521998464 /Users/chaoukibayoudhi/Documents/Teaching Package/ISG Tunis/first semester/2025_2026/secure_programming/lab_corrections/authentication_authorization_middlewares_axes/secure_ecommerce_project/secure_ecommerce_project/settings.py changed, reloading.
+INFO 2025-12-04 17:44:29,313 autoreload 18492 8521998464 Watching for file changes with StatReloader
+INFO 2025-12-04 18:27:26,037 log 18492 6155890688 "OPTIONS /api/auth/register/ HTTP/1.1" 200 0
+INFO 2025-12-04 18:27:27,281 log 18492 6155890688 "POST /api/auth/register/ HTTP/1.1" 201 779
+WARNING 2025-12-04 18:27:45,929 log 18492 6155890688 Bad Request: /api/auth/register/
+WARNING 2025-12-04 18:27:45,933 log 18492 6155890688 "POST /api/auth/register/ HTTP/1.1" 400 105
+WARNING 2025-12-04 18:28:54,415 log 18492 6155890688 Bad Request: /api/auth/register/
+WARNING 2025-12-04 18:28:54,418 log 18492 6155890688 "POST /api/auth/register/ HTTP/1.1" 400 50
+INFO 2025-12-04 18:30:06,562 log 18492 6155890688 "POST /api/auth/register/ HTTP/1.1" 201 781
+INFO 2025-12-04 18:46:38,525 log 18492 6155890688 "OPTIONS /api/auth/register/ HTTP/1.1" 200 0
+WARNING 2025-12-04 18:46:38,650 log 18492 6155890688 Bad Request: /api/auth/register/
+WARNING 2025-12-04 18:46:38,650 log 18492 6155890688 "POST /api/auth/register/ HTTP/1.1" 400 105
+INFO 2025-12-04 18:47:25,567 log 18492 6155890688 "POST /api/auth/register/ HTTP/1.1" 201 781
+WARNING 2025-12-04 18:47:25,656 log 18492 6155890688 Bad Request: /api/auth/register/
+WARNING 2025-12-04 18:47:25,657 log 18492 6155890688 "POST /api/auth/register/ HTTP/1.1" 400 105

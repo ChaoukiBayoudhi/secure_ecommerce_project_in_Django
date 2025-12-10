@@ -113,6 +113,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True, style={"input_type": "password"})
+    totp_code = serializers.CharField(write_only=True, required=False, allow_blank=True, help_text="TOTP code required if MFA is enabled")
 
     lockout_threshold = getattr(settings, "AUTH_LOCKOUT_THRESHOLD", 5)
     lockout_minutes = getattr(settings, "AUTH_LOCKOUT_MINUTES", 15)

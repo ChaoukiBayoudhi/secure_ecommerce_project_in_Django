@@ -43,26 +43,46 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Third-party security apps
+    'axes',  # Brute force protection
+    'django_filters',  # Filtering for ViewSets
+    # Local apps
     'authentication',
     'products',
     'orders',
     'payments',
     'reviews',
+    'monitoring',  # Health monitoring and AI agent
+    # REST Framework
     'rest_framework',
     'corsheaders',
     'rest_framework_simplejwt',
-    ]
+]
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware", #CORS vulnerability prevention
+    # CORS must be first to handle preflight requests
+    "corsheaders.middleware.CorsMiddleware",
+    # Security middleware (adds security headers)
     'django.middleware.security.SecurityMiddleware',
+    # Session middleware
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # Common middleware (URL rewriting, etc.)
     'django.middleware.common.CommonMiddleware',
+    # CSRF protection
     'django.middleware.csrf.CsrfViewMiddleware',
+    # Authentication middleware
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # Axes middleware (must be after authentication)
+    'axes.middleware.AxesMiddleware',
+    # Custom security middleware (audit logging and security headers)
+    'authentication.middleware.AuditLoggingMiddleware',
+    'authentication.middleware.SecurityHeadersMiddleware',
+    # Monitoring middleware (track performance metrics)
+    'monitoring.middleware.MonitoringMiddleware',
+    # Messages middleware
     'django.contrib.messages.middleware.MessageMiddleware',
+    # Clickjacking protection
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
 ]
 
 ROOT_URLCONF = 'secure_ecommerce_project.urls'
@@ -70,7 +90,7 @@ ROOT_URLCONF = 'secure_ecommerce_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -156,6 +176,19 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Media files (User uploads)
+# https://docs.djangoproject.com/en/5.2/topics/files/
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# File upload settings
+FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440  # 2.5 MB - files larger than this use temporary file storage
+DATA_UPLOAD_MAX_MEMORY_SIZE = 2621440  # 2.5 MB - max size for request body
+FILE_UPLOAD_PERMISSIONS = 0o644  # File permissions for uploaded files
+FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o755  # Directory permissions
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -177,6 +210,30 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+    # Pagination for list views
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
+    # Filtering
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
+    ],
+    # Throttling (rate limiting)
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/hour',  # Anonymous users: 100 requests per hour
+        'user': '1000/hour',  # Authenticated users: 1000 requests per hour
+    },
+    # Exception handling
+    'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
+    # Date/time formatting
+    'DATETIME_FORMAT': '%Y-%m-%dT%H:%M:%S%z',
+    'DATE_FORMAT': '%Y-%m-%d',
+    'TIME_FORMAT': '%H:%M:%S',
 }
 
 # Align Simple JWT lifetimes with the security recommendations documented in
@@ -278,4 +335,241 @@ PERMISSIONS_POLICY = {
     'midi': [],
     'payment': [],
     'usb': [],
-}   
+}
+
+# ============================================================================
+# DJANGO AXES CONFIGURATION (Brute Force Protection)
+# ============================================================================
+#
+# Django Axes provides protection against brute force attacks by tracking
+# failed login attempts and implementing lockout mechanisms.
+
+# Enable Axes
+AXES_ENABLED = env.bool('AXES_ENABLED', default=True)
+
+# Number of failed login attempts before lockout
+AXES_FAILURE_LIMIT = env.int('AXES_FAILURE_LIMIT', default=5)
+
+# Time to wait (in hours) before allowing retry after lockout
+AXES_COOLOFF_TIME = env.int('AXES_COOLOFF_TIME', default=1)  # 1 hour
+
+# Lockout method: 'axes.lockout.database_lockout' uses database
+# Other options: 'axes.lockout.cache_lockout', 'axes.lockout.memory_lockout'
+AXES_LOCKOUT_CALLABLE = 'axes.lockout.database_lockout'
+
+# Reset failed attempts on successful login
+AXES_RESET_ON_SUCCESS = env.bool('AXES_RESET_ON_SUCCESS', default=True)
+
+# Lockout parameters (what to track for lockout)
+# Options: 'ip_address', 'username', 'user_agent', 'username_and_ip'
+AXES_LOCKOUT_PARAMETERS = ['ip_address', 'username']
+
+# Enable Axes admin interface
+AXES_ENABLE_ADMIN = env.bool('AXES_ENABLE_ADMIN', default=True)
+
+# Verbose logging
+AXES_VERBOSE = env.bool('AXES_VERBOSE', default=True)
+
+# Logger name for Axes
+AXES_LOGGER = 'axes.watch_login'
+
+# Cache configuration (if using cache-based lockout)
+AXES_CACHE = 'default'
+AXES_CACHE_KEY_PREFIX = 'axes'
+
+# IP whitelist (never lock these IPs)
+AXES_IP_WHITELIST = env.list('AXES_IP_WHITELIST', default=[])
+
+# IP blacklist (always lock these IPs)
+AXES_IP_BLACKLIST = env.list('AXES_IP_BLACKLIST', default=[])
+
+# Username whitelist (never lock these users)
+AXES_USERNAME_WHITELIST = env.list('AXES_USERNAME_WHITELIST', default=[])
+
+# Disable access log (set to False to enable detailed logging)
+AXES_DISABLE_ACCESS_LOG = env.bool('AXES_DISABLE_ACCESS_LOG', default=False)
+
+# ============================================================================
+# RATE LIMITING CONFIGURATION
+# ============================================================================
+#
+# Rate limiting is implemented using django-ratelimit decorator.
+# Additional throttling is configured in REST_FRAMEWORK settings above.
+
+# Cache backend for rate limiting (use Redis in production)
+RATELIMIT_USE_CACHE = 'default'
+
+# ============================================================================
+# TOTP/MFA CONFIGURATION
+# ============================================================================
+#
+# Time-based One-Time Password (TOTP) for Multi-Factor Authentication
+
+# TOTP issuer name (shown in authenticator apps)
+TOTP_ISSUER_NAME = env.str('TOTP_ISSUER_NAME', default='Secure E-Commerce')
+
+# TOTP time step (in seconds, default 30 seconds)
+TOTP_INTERVAL = env.int('TOTP_INTERVAL', default=30)
+
+# TOTP digits (default 6)
+TOTP_DIGITS = env.int('TOTP_DIGITS', default=6)
+
+# TOTP window (number of time steps to allow for clock skew)
+TOTP_WINDOW = env.int('TOTP_WINDOW', default=1)
+
+# ============================================================================
+# AUDIT LOGGING CONFIGURATION
+# ============================================================================
+#
+# Audit logging is handled by AuditLoggingMiddleware.
+# All security-relevant events are logged to the AuditLog model.
+
+# Enable audit logging
+AUDIT_LOGGING_ENABLED = env.bool('AUDIT_LOGGING_ENABLED', default=True)
+
+# Log all requests (set to False to log only security events)
+AUDIT_LOG_ALL_REQUESTS = env.bool('AUDIT_LOG_ALL_REQUESTS', default=False)
+
+# ============================================================================
+# CORS CONFIGURATION
+# ============================================================================
+#
+# Cross-Origin Resource Sharing (CORS) configuration
+
+# CORS allowed origins (from environment variable)
+# Example: CORS_ALLOWED_ORIGINS = ['https://example.com', 'https://www.example.com']
+# Already set above from environment
+# Add Flutter web ports if not already included
+if 'http://localhost:8080' not in CORS_ALLOWED_ORIGINS:
+    CORS_ALLOWED_ORIGINS.append('http://localhost:8080')
+if 'http://127.0.0.1:8080' not in CORS_ALLOWED_ORIGINS:
+    CORS_ALLOWED_ORIGINS.append('http://127.0.0.1:8080')
+# Allow any localhost port for development (Flutter web uses random ports)
+# This is safer than CORS_ALLOW_ALL_ORIGINS=True as it only allows localhost
+CORS_ALLOW_ALL_ORIGINS = env.bool('CORS_ALLOW_ALL_ORIGINS', default=False)
+# Always allow localhost ports for development (Flutter web uses random ports)
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^http://localhost:\d+$",
+    r"^http://127\.0\.0\.1:\d+$",
+]
+
+# CORS allowed methods
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+# CORS allowed headers
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+# CORS allow credentials (cookies, authorization headers)
+CORS_ALLOW_CREDENTIALS = True
+
+# CORS preflight cache duration (in seconds)
+CORS_PREFLIGHT_MAX_AGE = 86400  # 24 hours
+
+# ============================================================================
+# CACHING CONFIGURATION
+# ============================================================================
+#
+# Cache configuration for rate limiting and performance
+
+# Use Redis for caching in production
+# For development, use local memory cache
+if env.bool('USE_REDIS_CACHE', default=False):
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': env.str('REDIS_URL', default='redis://127.0.0.1:6379/1'),
+            'OPTIONS': {
+                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            },
+            'KEY_PREFIX': 'secure_ecommerce',
+            'TIMEOUT': 300,  # 5 minutes default timeout
+        }
+    }
+else:
+    # Local memory cache for development
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'unique-snowflake',
+        }
+    }
+
+# ============================================================================
+# LOGGING CONFIGURATION
+# ============================================================================
+#
+# Comprehensive logging configuration for security monitoring
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'security.log'),
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': env.str('DJANGO_LOG_LEVEL', default='INFO'),
+            'propagate': False,
+        },
+        'axes': {
+            'handlers': ['console', 'file'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'authentication': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
+
+# Create logs directory if it doesn't exist
+LOGS_DIR = os.path.join(BASE_DIR, 'logs')
+if not os.path.exists(LOGS_DIR):
+    os.makedirs(LOGS_DIR)   

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Monitoring Dashboard - Secure E-Commerce</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+        
+        .status-healthy { background: #10b981; }
+        .status-warning { background: #f59e0b; }
+        .status-critical { background: #ef4444; }
+        .status-degraded { background: #f97316; }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .metric-card h3 {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-unit {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .section h2 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .alert-item, .incident-item, .action-item {
+            padding: 1rem;
+            border-left: 4px solid #ddd;
+            margin-bottom: 0.5rem;
+            background: #f9fafb;
+            border-radius: 5px;
+        }
+        
+        .alert-critical { border-left-color: #ef4444; }
+        .alert-warning { border-left-color: #f59e0b; }
+        .alert-info { border-left-color: #3b82f6; }
+        
+        .incident-critical { border-left-color: #ef4444; }
+        .incident-high { border-left-color: #f97316; }
+        .incident-medium { border-left-color: #f59e0b; }
+        .incident-low { border-left-color: #3b82f6; }
+        
+        .action-completed { border-left-color: #10b981; }
+        .action-failed { border-left-color: #ef4444; }
+        .action-pending { border-left-color: #f59e0b; }
+        
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .refresh-btn:hover {
+            background: #5568d3;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🤖 AI Monitoring Dashboard</h1>
+        <p>Autonomous Health Monitoring & Control System</p>
+        <div id="overall-status" class="status-badge status-healthy">Loading...</div>
+    </div>
+    
+    <div class="container">
+        <button class="refresh-btn" onclick="loadDashboard()">🔄 Refresh</button>
+        
+        <div id="metrics" class="metrics-grid">
+            <div class="loading">Loading metrics...</div>
+        </div>
+        
+        <div class="section">
+            <h2>🚨 Recent Alerts</h2>
+            <div id="alerts">Loading alerts...</div>
+        </div>
+        
+        <div class="section">
+            <h2>⚠️ Active Incidents</h2>
+            <div id="incidents">Loading incidents...</div>
+        </div>
+        
+        <div class="section">
+            <h2>🤖 Recent AI Actions</h2>
+            <div id="actions">Loading AI actions...</div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = '/api/monitoring';
+        const TOKEN = localStorage.getItem('auth_token') || prompt('Enter your JWT token:');
+        
+        async function loadDashboard() {
+            try {
+                const response = await fetch(`${API_BASE}/dashboard/`, {
+                    headers: {
+                        'Authorization': `Bearer ${TOKEN}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                renderDashboard(data);
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                document.getElementById('metrics').innerHTML = `<div class="loading">Error: ${error.message}</div>`;
+            }
+        }
+        
+        function renderDashboard(data) {
+            // Update overall status
+            const status = data.current_health?.overall_status || 'unknown';
+            const statusEl = document.getElementById('overall-status');
+            statusEl.textContent = status.toUpperCase();
+            statusEl.className = `status-badge status-${status}`;
+            
+            // Render metrics
+            if (data.current_health) {
+                const metrics = [
+                    { label: 'CPU Usage', value: data.current_health.cpu_usage, unit: '%' },
+                    { label: 'Memory Usage', value: data.current_health.memory_usage, unit: '%' },
+                    { label: 'Disk Usage', value: data.current_health.disk_usage, unit: '%' },
+                    { label: 'Response Time', value: data.current_health.avg_response_time, unit: 'ms' },
+                    { label: 'Error Rate', value: data.current_health.error_rate, unit: '%' },
+                    { label: 'Active Alerts', value: data.current_health.active_alerts_count, unit: '' },
+                ];
+                
+                document.getElementById('metrics').innerHTML = metrics.map(m => `
+                    <div class="metric-card">
+                        <h3>${m.label}</h3>
+                        <div class="metric-value">${m.value.toFixed(1)}</div>
+                        <div class="metric-unit">${m.unit}</div>
+                    </div>
+                `).join('');
+            }
+            
+            // Render alerts
+            if (data.recent_alerts && data.recent_alerts.length > 0) {
+                document.getElementById('alerts').innerHTML = data.recent_alerts.map(alert => `
+                    <div class="alert-item alert-${alert.severity}">
+                        <strong>${alert.title}</strong>
+                        <p>${alert.message}</p>
+                        <small>${new Date(alert.created_at).toLocaleString()} | ${alert.status}</small>
+                        ${alert.ai_action_taken ? '<span style="color: #10b981;">✓ AI Action Taken</span>' : ''}
+                    </div>
+                `).join('');
+            } else {
+                document.getElementById('alerts').innerHTML = '<p>No recent alerts</p>';
+            }
+            
+            // Render incidents
+            if (data.active_incidents && data.active_incidents.length > 0) {
+                document.getElementById('incidents').innerHTML = data.active_incidents.map(incident => `
+                    <div class="incident-item incident-${incident.severity}">
+                        <strong>${incident.title}</strong>
+                        <p>${incident.description}</p>
+                        <small>${new Date(incident.created_at).toLocaleString()} | ${incident.status}</small>
+                        ${incident.ai_detected ? '<span style="color: #667eea;">🤖 AI Detected</span>' : ''}
+                    </div>
+                `).join('');
+            } else {
+                document.getElementById('incidents').innerHTML = '<p>No active incidents</p>';
+            }
+            
+            // Render AI actions
+            if (data.recent_actions && data.recent_actions.length > 0) {
+                document.getElementById('actions').innerHTML = data.recent_actions.map(action => `
+                    <div class="action-item action-${action.status}">
+                        <strong>${action.action_type.replace('_', ' ').toUpperCase()}</strong>
+                        <p>${action.description}</p>
+                        <small>Triggered by: ${action.triggered_by}</small>
+                        <small>Status: ${action.status} | ${action.success !== null ? (action.success ? '✓ Success' : '✗ Failed') : ''}</small>
+                    </div>
+                `).join('');
+            } else {
+                document.getElementById('actions').innerHTML = '<p>No recent AI actions</p>';
+            }
+        }
+        
+        // Load dashboard on page load
+        loadDashboard();
+        
+        // Auto-refresh every 30 seconds
+        setInterval(loadDashboard, 30000);
+    </script>
+</body>
+</html>
+

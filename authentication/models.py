@@ -1,3 +1,10 @@
+"""
+Authentication models for the secure e-commerce application.
+
+This module extends the existing User and Role models with additional
+security features including TOTP (Time-based One-Time Password) for MFA.
+"""
+
 from datetime import timedelta
 
 from django.conf import settings
@@ -51,7 +58,7 @@ class User(AbstractUser):
     Custom application user model.
 
     Uses email as the login identifier and layers additional security metadata
-    for tracking verification state and login throttling.
+    for tracking verification state, login throttling, and MFA support.
     """
 
     username = models.CharField(
@@ -81,6 +88,7 @@ class User(AbstractUser):
     roles = models.ManyToManyField(
         Role,
         through="UserRole",
+        through_fields=('user', 'role'),
         related_name="users",
         blank=True,
         help_text="Collection of authorization roles granted to this account.",
@@ -90,6 +98,17 @@ class User(AbstractUser):
     failed_login_attempts = models.PositiveIntegerField(default=0)
     last_failed_login = models.DateTimeField(null=True, blank=True)
     account_locked_until = models.DateTimeField(null=True, blank=True)
+    
+    # Multi-Factor Authentication (MFA) fields
+    mfa_enabled = models.BooleanField(
+        default=False,
+        help_text="If True, user has enabled Multi-Factor Authentication",
+    )
+    mfa_secret = models.CharField(
+        max_length=32,
+        blank=True,
+        help_text="TOTP secret key for MFA (encrypted in production)",
+    )
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
@@ -163,3 +182,113 @@ class UserRole(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user.email} → {self.role.name}"
+
+
+class AuditLog(models.Model):
+    """
+    Comprehensive audit logging model for security event tracking.
+    
+    Records all significant security events including:
+    - Login attempts (successful and failed)
+    - Authorization failures
+    - Sensitive data access
+    - Administrative actions
+    - API access patterns
+    
+    Security Considerations:
+    - Never delete audit logs (compliance requirement)
+    - IP addresses and user agents help identify threats
+    - Metadata field allows flexible event-specific data
+    - Indexed for fast security analysis queries
+    """
+    
+    # User Information (nullable for anonymous events)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='audit_logs',
+        help_text="User who performed the action (null for anonymous events)",
+    )
+    
+    # Event Information
+    action = models.CharField(
+        max_length=100,
+        db_index=True,
+        help_text="Action type: LOGIN, LOGOUT, CREATE, UPDATE, DELETE, ACCESS_DENIED, etc.",
+    )
+    resource_type = models.CharField(
+        max_length=100,
+        db_index=True,
+        help_text="Resource type: USER, PRODUCT, ORDER, PAYMENT, etc.",
+    )
+    resource_id = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        help_text="ID of the affected resource (if applicable)",
+    )
+    
+    # Request Information
+    ip_address = models.GenericIPAddressField(
+        null=True,
+        blank=True,
+        help_text="IP address of the client making the request",
+    )
+    user_agent = models.TextField(
+        blank=True,
+        help_text="User agent string from the HTTP request",
+    )
+    request_path = models.CharField(
+        max_length=500,
+        blank=True,
+        help_text="URL path of the request",
+    )
+    request_method = models.CharField(
+        max_length=10,
+        blank=True,
+        help_text="HTTP method: GET, POST, PUT, DELETE, etc.",
+    )
+    
+    # Event Status
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ('SUCCESS', 'Success'),
+            ('FAILURE', 'Failure'),
+            ('BLOCKED', 'Blocked'),
+        ],
+        default='SUCCESS',
+        db_index=True,
+        help_text="Status of the action",
+    )
+    
+    # Additional Metadata (JSON field for flexible data)
+    metadata = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text="Additional event-specific data in JSON format",
+    )
+    
+    # Timestamp
+    timestamp = models.DateTimeField(
+        auto_now_add=True,
+        db_index=True,
+        help_text="Timestamp when the event occurred",
+    )
+    
+    class Meta:
+        ordering = ['-timestamp']  # Most recent events first
+        indexes = [
+            models.Index(fields=['user', 'timestamp']),  # User activity
+            models.Index(fields=['action', 'status', 'timestamp']),  # Security analysis
+            models.Index(fields=['ip_address', 'timestamp']),  # IP tracking
+            models.Index(fields=['resource_type', 'resource_id']),  # Resource access
+        ]
+        verbose_name = "Audit Log"
+        verbose_name_plural = "Audit Logs"
+    
+    def __str__(self):
+        user_str = self.user.email if self.user else "Anonymous"
+        return f"{self.action} on {self.resource_type} by {user_str} at {self.timestamp}"

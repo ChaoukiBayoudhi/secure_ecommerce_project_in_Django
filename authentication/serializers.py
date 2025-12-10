@@ -55,13 +55,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         write_only=True,
         style={"input_type": "password"},
     )
-    roles = serializers.SlugRelatedField(
-        many=True,
-        slug_field="name",
-        queryset=Role.objects.filter(is_active=True),
-        required=False,
-        help_text="Optional list of role names to assign during registration.",
-    )
 
     class Meta:
         model = User
@@ -73,7 +66,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             "phone_number",
             "password",
             "password_confirm",
-            "roles",
         ]
 
     def validate_email(self, value: str) -> str:
@@ -89,7 +81,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        roles = validated_data.pop("roles", [])
         password = validated_data.pop("password")
 
         user = User.objects.create_user(password=password, **validated_data)
@@ -99,13 +90,32 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         if request and getattr(request, "user", None) and request.user.is_authenticated:
             assigning_user = request.user
 
-        if roles:
-            for role in roles:
-                UserRole.objects.update_or_create(
-                    user=user,
-                    role=role,
-                    defaults={"assigned_by": assigning_user},
+        # Assign the least-privileged baseline role so new users cannot self-provision
+        # elevated permissions during signup. The name is configurable to make the
+        # behavior explicit per environment (e.g., CUSTOMER vs. STUDENT).
+        default_role_name = getattr(settings, "DEFAULT_CUSTOMER_ROLE", None)
+        if default_role_name:
+            try:
+                default_role = Role.objects.get(name=default_role_name, is_active=True)
+            except Role.DoesNotExist:
+                raise serializers.ValidationError(
+                    {
+                        "non_field_errors": [
+                            _(
+                                "Default role '%(role)s' is not configured or inactive. "
+                                "Ask an administrator to seed roles before registering."
+                            )
+                            % {"role": default_role_name}
+                        ]
+                    }
                 )
+
+            # Record who (if anyone) granted the default role for auditability.
+            UserRole.objects.update_or_create(
+                user=user,
+                role=default_role,
+                defaults={"assigned_by": assigning_user},
+            )
 
         return user
 

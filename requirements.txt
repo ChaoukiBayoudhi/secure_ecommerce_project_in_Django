@@ -1,0 +1,15 @@
+# Runtime dependencies (tested with Python 3.12 and 3.13, PostgreSQL 17).
+Django==6.1.2
+djangorestframework==3.18.3
+djangorestframework-simplejwt==5.5.1
+django-filter==26.2
+django-axes==8.3.1
+django-cors-headers==4.9.0
+django-ratelimit==4.1.0
+django-environ==0.14.0
+psycopg[binary]==3.3.6
+pyotp==2.10.0
+qrcode[pil]==8.2
+python-magic==0.4.27
+psutil==7.2.2
+cryptography==50.0.2

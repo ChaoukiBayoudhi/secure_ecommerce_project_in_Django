@@ -1,6 +1,8 @@
 # Secure E-Commerce API - Complete Implementation
 
-A comprehensive, production-ready secure e-commerce API built with Django REST Framework, featuring enterprise-grade security practices.
+A secure e-commerce REST API built with Django REST Framework as a reference implementation for teaching secure programming (Secure Programming course, ISG Tunis).
+
+**Clients:** [Angular web client](https://github.com/ChaoukiBayoudhi/secure-ecommerce-angular-client) · [Flutter mobile client](https://github.com/ChaoukiBayoudhi/secure_ecommerce_flutter)
 
 ## 🎯 Features
 

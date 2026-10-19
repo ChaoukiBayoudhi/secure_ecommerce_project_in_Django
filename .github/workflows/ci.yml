@@ -1,4 +1,5 @@
-# CI for Django/Python repos.
+# CI for the Django API: install, system checks, migrations and tests
+# against a real PostgreSQL service (the project uses PostgreSQL only).
 name: CI
 
 on:
@@ -11,8 +12,37 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        python-version: [ "3.11", "3.12" ]
+        python-version: [ "3.12", "3.13" ]   # Django 6.x requires Python >= 3.12
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci
+          POSTGRES_DB: ecom
+        ports: [ "5432:5432" ]
+        options: >-
+          --health-cmd "pg_isready -U ci"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+
+    env:
+      # CI-only values; real secrets never live in the workflow.
+      SECRET_KEY: ci-only-not-a-secret
+      DEBUG: "False"
+      ALLOWED_HOSTS: localhost,127.0.0.1,testserver
+      CORS_ALLOWED_ORIGINS: http://localhost:4200
+      DB_NAME: ecom
+      DB_USER: ci
+      DB_PASSWORD: ci
+      DB_HOST: 127.0.0.1
+      DB_PORT: "5432"
+      DB_CON_TIMEOUT: "10"
+      DB_SSLMODE: disable
+      DB_CON_MAX_AGE: "0"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,16 +52,24 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
+          cache-dependency-path: requirements.txt
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          pip install ruff
+          pip install -r requirements.txt ruff
 
       - name: Lint (ruff)
         run: ruff check . || true   # remove "|| true" once the codebase is clean
 
+      - name: Django system checks
+        run: python manage.py check --fail-level ERROR
+
+      - name: Migrations are up to date
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Apply migrations
+        run: python manage.py migrate --noinput
+
       - name: Run tests
-        run: |
-          if [ -f manage.py ]; then python manage.py test; else pytest -q || true; fi
+        run: python manage.py test
